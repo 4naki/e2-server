@@ -1,5 +1,7 @@
 @name Naki's Epic E2 Network - Server
 @persist [DomainName Data]:string LoginDetails:array RequestEntity:entity Ready Block
+#Product by Lertz & Naki
+
 if(first()){
     dsJoinGroup("naki's e2 network")
     runOnSignal("naki's e2 network",2,1)

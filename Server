@@ -1,0 +1,84 @@
+@name Naki's Epic E2 Network - Server
+@persist [DSName DomainName Data SenderName]:string LoginDetails:array RequestEntity:entity Ready Block
+if(first()){
+    DSName="naki's e2 network"
+    dsJoinGroup(DSName)
+    runOnSignal(DSName,2,1)
+    dsSetScope(2)
+    
+    DomainName = "test_server"
+    #ifdef httpRequest(string)
+    DataLink = "This is a test server data string"
+    
+    httpRequest(DataLink)
+    runOnHTTP(1)
+    #else
+        print("HTTP Core Not Found!")
+    #endif
+    
+    dsSend("domain_check",DSName,array(entity(),DomainName))
+    timer("start",1000)
+    
+}
+#ifdef httpRequest(string)
+    if(httpClk()){
+        if(httpSuccess()){
+            ReturnData=httpUrlDecode(httpData())
+            Data=ReturnData
+        }
+    }
+#endif
+if(dsClk()){
+    switch(dsClkName()){
+        #check if domain is in use
+        case "domain_check",
+        local GetData = dsGetArray()
+        local Sender = GetData[1, entity]
+        local GetDomainName = GetData[2, string]
+        if(Sender:isValid()){
+            if(GetDomainName == DomainName){
+                dsSend(GetDomainName + "_domain_inuse", DSName,"a")
+            }
+        }
+        break
+        
+        default,
+        break
+    }
+    
+    #data signal stuff
+    if(Ready&!Block){
+        RequestEntity = dsGetEntity()
+        switch(dsClkName()){
+            case DomainName + "_domain_inuse",
+            hint("This domain is already in use!", 7)
+            stoptimer("start")
+            Block = 1
+            break
+            
+            case DomainName + "_request_data",
+            dsSend(RequestEntity:id() + "_send_data",DSName,Data)
+            break
+            
+            case DomainName + "_request_owner",
+            dsSend(RequestEntity:id() + "_send_data",DSName,"Domain owner: "+owner():name())
+            break
+            
+            case DomainName + "_ping",
+            SenderName = RequestEntity:owner():name()
+            dsSend(RequestEntity:id() + "_send_ping",DSName, systime())
+            break
+            
+            default,
+            break
+        }
+    }
+}else{
+    local Clk = clkName():explode(" ")
+    switch(Clk[1, string]){
+        case "start",
+        hint("Server started with domain: "+DomainName,7)
+        Ready=1
+        break
+    }
+}

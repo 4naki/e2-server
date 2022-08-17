@@ -1,7 +1,7 @@
 @name Naki's Epic E2 Network - Client
-@persist Errors:array ErrorID
-@persist PingVal [ServerNameSave Ping_Info]:string ALL:array TOT
-@outputs PingVal [ServerNameSave Ping_Info]:string ALL:array TOT
+@persist Errors:array ErrorID PingVal [ServerNameSave Ping_Info]:string ALL:array TOT
+#Product by Lertz & Naki
+
 if(first()){
     dsJoinGroup("naki's e2 network")
     runOnSignal("naki's e2 network",2,1)

@@ -8,7 +8,7 @@ if(first()){
     
     DomainName = "test_server"
     #ifdef httpRequest(string)
-    DataLink = "This is a test server data string"
+    DataLink = "https://raw.githubusercontent.com/4naki/e2-server/main/example"
     
     httpRequest(DataLink)
     runOnHTTP(1)

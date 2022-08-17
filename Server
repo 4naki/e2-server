@@ -1,9 +1,8 @@
 @name Naki's Epic E2 Network - Server
-@persist [DSName DomainName Data SenderName]:string LoginDetails:array RequestEntity:entity Ready Block
+@persist [DomainName Data]:string LoginDetails:array RequestEntity:entity Ready Block
 if(first()){
-    DSName="naki's e2 network"
-    dsJoinGroup(DSName)
-    runOnSignal(DSName,2,1)
+    dsJoinGroup("naki's e2 network")
+    runOnSignal("naki's e2 network",2,1)
     dsSetScope(2)
     
     DomainName = "test_server"
@@ -16,7 +15,7 @@ if(first()){
         print("HTTP Core Not Found!")
     #endif
     
-    dsSend("domain_check",DSName,array(entity(),DomainName))
+    dsSend("domain_check","naki's e2 network",DomainName)
     timer("start",1000)
     
 }
@@ -32,12 +31,10 @@ if(dsClk()){
     switch(dsClkName()){
         #check if domain is in use
         case "domain_check",
-        local GetData = dsGetArray()
-        local Sender = GetData[1, entity]
-        local GetDomainName = GetData[2, string]
-        if(Sender:isValid()){
+        local GetDomainName = dsGetString()
+        if(dsGetSender():isValid()){
             if(GetDomainName == DomainName){
-                dsSend(GetDomainName + "_domain_inuse", DSName,"a")
+                dsSend(GetDomainName + "_domain_inuse", "naki's e2 network","a")
             }
         }
         break
@@ -48,7 +45,6 @@ if(dsClk()){
     
     #data signal stuff
     if(Ready&!Block){
-        RequestEntity = dsGetEntity()
         switch(dsClkName()){
             case DomainName + "_domain_inuse",
             hint("This domain is already in use!", 7)
@@ -57,16 +53,15 @@ if(dsClk()){
             break
             
             case DomainName + "_request_data",
-            dsSend(RequestEntity:id() + "_send_data",DSName,Data)
+            dsSend(dsGetSender():id() + "_send_data","naki's e2 network",Data)
             break
             
             case DomainName + "_request_owner",
-            dsSend(RequestEntity:id() + "_send_data",DSName,"Domain owner: "+owner():name())
+            dsSend(dsGetSender():id() + "_send_data","naki's e2 network","Domain owner: "+owner():name())
             break
             
             case DomainName + "_ping",
-            SenderName = RequestEntity:owner():name()
-            dsSend(RequestEntity:id() + "_send_ping",DSName, systime())
+            dsSend(dsGetSender():id() + "_send_ping","naki's e2 network", systime())
             break
             
             default,

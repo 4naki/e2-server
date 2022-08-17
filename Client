@@ -1,10 +1,9 @@
 @name Naki's Epic E2 Network - Client
-@persist DSName:string Errors:array ErrorID
+@persist Errors:array ErrorID
 @persist PingVal [ServerNameSave Ping_Info]:string ALL:array TOT
 if(first()){
-    DSName="naki's e2 network"
-    dsJoinGroup(DSName)
-    runOnSignal(DSName,2,1)
+    dsJoinGroup("naki's e2 network")
+    runOnSignal("naki's e2 network",2,1)
     runOnChat(1)
     dsSetScope(2)
     
@@ -33,7 +32,7 @@ if(chatClk(owner())){
         case ".request",
         if(LS:count() == 3){
             local RequestServerName = LS[3, string]
-            dsSend(RequestServerName + "_request_" + LS[2, string], DSName, entity())
+            dsSend(RequestServerName + "_request_" + LS[2, string], "naki's e2 network", entity())
         }
         break
         
@@ -102,7 +101,7 @@ if(dsClk()){
     switch(Clk[1, string]){
         case "ping",
         I = Clk[2, string]:toNumber() + 1
-        dsSend(ServerNameSave + "_ping", DSName, systime(), entity())
+        dsSend(ServerNameSave + "_ping", "naki's e2 network", systime(), entity())
         if(I <= 4)
         {
             timer("ping " + I, 1000)
@@ -132,5 +131,5 @@ if(dsClk()){
 }
 
 if(last()){
-    dsLeaveGroup(DSName)
+    dsLeaveGroup("naki's e2 network")
 }

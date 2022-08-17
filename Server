@@ -15,7 +15,7 @@ if(first()){
         print("HTTP Core Not Found!")
     #endif
     
-    dsSend("domain_check","naki's e2 network",DomainName)
+    dsSend("domain_check","naki's e2 network",array(DomainName,entity()))
     timer("start",1000)
     
 }
@@ -31,12 +31,18 @@ if(dsClk()){
     switch(dsClkName()){
         #check if domain is in use
         case "domain_check",
-        local GetDomainName = dsGetString()
+        local GetDomainName = dsGetArray()[1,string]
         if(dsGetSender():isValid()){
             if(GetDomainName == DomainName){
-                dsSend(GetDomainName + "_domain_inuse", "naki's e2 network","a")
+                dsSend(dsGetSender():id() + "_domain_inuse", "naki's e2 network","")
             }
         }
+        break
+        
+        case entity():id() + "_domain_inuse",
+        hint("This domain is already in use!", 7)
+        stoptimer("start")
+        Block = 1
         break
         
         default,
@@ -46,11 +52,6 @@ if(dsClk()){
     #data signal stuff
     if(Ready&!Block){
         switch(dsClkName()){
-            case DomainName + "_domain_inuse",
-            hint("This domain is already in use!", 7)
-            stoptimer("start")
-            Block = 1
-            break
             
             case DomainName + "_request_data",
             dsSend(dsGetSender():id() + "_send_data","naki's e2 network",Data)
